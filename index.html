@@ -2,10 +2,152 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lost & Found</title>
+    <title>Lost and Found</title>
 </head>
+
 <body>
+
+    <h1>Lost and Found</h1>
     
+    <button onclick="loadItems()">Load All Items</button>
+    <div>
+        <label for="searchBar">Item ID:</label>
+        <input type="text" id="searchBar" name="searchBar" placeholder="Enter item ID">
+        <button onclick="singleItem()">search</button>
+    </div>
+    
+    <div>
+        <ul id="itemsList"></ul>
+    </div>
+
+    <h2>Add a found item</h2>
+    <form onsubmit="addItem(event)">
+        <div>
+            <label for="itemName">Item name:</label>
+            <input type="text" id="itemName" required>
+        </div>
+        <div>
+            <label for="category">Category:</label>
+            <input type="text" id="category" required>
+        </div>
+        <div>
+            <label for="locationFound">Location found:</label>
+            <input type="text" id="locationFound" required>
+        </div>
+        <div>
+            <label for="dateFound">Date found:</label>
+            <input type="date" id="dateFound" required>
+        </div>
+        <button type="submit">Add item</button>
+    </form>
+    <p id="message"></p>
+    
+    <script>
+        async function loadItems(){
+
+            const response = await fetch("/api/items");
+            const items = await response.json();
+            const list = document.getElementById("itemsList");
+
+            list.innerHTML = "";
+
+            items.forEach(item =>{
+                const itemElement = document.createElement("li");
+                const status = item.claimed ? "CLAIMED" : "UNCLAIMED";
+
+                itemElement.textContent =
+                    item.item_name + " - " + item.category + " - " +
+                    item.location_found + " - " + item.date_found +
+                    " - " + status + " ";
+
+                if(!item.claimed){
+                    const deleteButton = document.createElement("button");
+                    deleteButton.textContent = "Delete";
+                    deleteButton.onclick = () => deleteItem(item.id);
+                    itemElement.appendChild(deleteButton);
+                }
+
+                list.appendChild(itemElement);
+            });
+        }
+
+        async function singleItem(){
+            const id = document.getElementById("searchBar").value;
+            const response = await fetch(`/api/items/${id}`);
+            const item = await response.json();
+            const list = document.getElementById("itemsList");
+
+            list.innerHTML = "";
+
+            if(!response.ok){
+                document.getElementById("message").textContent = item.message;
+                return;
+            }
+
+            const itemElement = document.createElement("li");
+            const status = item.claimed ? "CLAIMED" : "UNCLAIMED";
+
+            itemElement.textContent =
+                item.item_name + " - " + item.category + " - " +
+                item.location_found + " - " + item.date_found +
+                " - " + status + " ";
+
+            if(!item.claimed){
+                const deleteButton = document.createElement("button");
+                deleteButton.textContent = "Delete";
+                deleteButton.onclick = () => deleteItem(item.id);
+                itemElement.appendChild(deleteButton);
+            }
+
+            list.appendChild(itemElement);
+            document.getElementById("message").textContent = "";
+        }
+
+        async function addItem(event){
+            event.preventDefault();
+
+            const newItem = {
+                item_name: document.getElementById("itemName").value,
+                category: document.getElementById("category").value,
+                location_found: document.getElementById("locationFound").value,
+                date_found: document.getElementById("dateFound").value
+            };
+
+            const response = await fetch("/api/items", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(newItem)
+            });
+            const result = await response.json();
+
+            document.getElementById("message").textContent = response.ok
+                ? "Item added as UNCLAIMED."
+                : result.message;
+
+            if(response.ok){
+                event.target.reset();
+                loadItems();
+            }
+        }
+
+        async function deleteItem(id){
+            const response = await fetch(`/api/items/${id}`, {
+                method: "DELETE"
+            });
+            const result = await response.json();
+
+            document.getElementById("message").textContent = result.message;
+
+            if(response.ok){
+                loadItems();
+            }
+        }
+
+        loadItems();
+
+    </script>
+
 </body>
 </html>
