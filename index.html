@@ -16,9 +16,20 @@
         <button onclick="singleItem()">search</button>
     </div>
     
-    <div>
-        <ul id="itemsList"></ul>
-    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Item name</th>
+                <th>Category</th>
+                <th>Location found</th>
+                <th>Date found</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="itemsList"></tbody>
+    </table>
 
     <h2>Add a found item</h2>
     <form onsubmit="addItem(event)">
@@ -52,19 +63,24 @@
             list.innerHTML = "";
 
             items.forEach(item =>{
-                const itemElement = document.createElement("li");
+                const itemElement = document.createElement("tr");
                 const status = item.claimed ? "CLAIMED" : "UNCLAIMED";
 
-                itemElement.textContent =
-                    item.item_name + " - " + item.category + " - " +
-                    item.location_found + " - " + item.date_found +
-                    " - " + status + " ";
+                itemElement.innerHTML = `
+                    <td>${item.id}</td>
+                    <td>${item.item_name}</td>
+                    <td>${item.category}</td>
+                    <td>${item.location_found}</td>
+                    <td>${item.date_found}</td>
+                    <td>${status}</td>
+                    <td></td>
+                `;
 
                 if(!item.claimed){
                     const deleteButton = document.createElement("button");
                     deleteButton.textContent = "Delete";
                     deleteButton.onclick = () => deleteItem(item.id);
-                    itemElement.appendChild(deleteButton);
+                    itemElement.lastElementChild.appendChild(deleteButton);
                 }
 
                 list.appendChild(itemElement);
@@ -84,19 +100,24 @@
                 return;
             }
 
-            const itemElement = document.createElement("li");
+            const itemElement = document.createElement("tr");
             const status = item.claimed ? "CLAIMED" : "UNCLAIMED";
 
-            itemElement.textContent =
-                item.item_name + " - " + item.category + " - " +
-                item.location_found + " - " + item.date_found +
-                " - " + status + " ";
+            itemElement.innerHTML = `
+                <td>${item.id}</td>
+                <td>${item.item_name}</td>
+                <td>${item.category}</td>
+                <td>${item.location_found}</td>
+                <td>${item.date_found}</td>
+                <td>${status}</td>
+                <td></td>
+            `;
 
             if(!item.claimed){
                 const deleteButton = document.createElement("button");
                 deleteButton.textContent = "Delete";
                 deleteButton.onclick = () => deleteItem(item.id);
-                itemElement.appendChild(deleteButton);
+                itemElement.lastElementChild.appendChild(deleteButton);
             }
 
             list.appendChild(itemElement);
