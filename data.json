@@ -1,17 +1,20 @@
-const items = [
-  {
-    "id": 1,
-    "name": "Item 1",
-    "price": 10.99
-  },
-  {
-    "id": 2,
-    "name": "Item 2",
-    "price": 15.49
-  },
-  {
-    "id": 3,
-    "name": "Item 3",
-    "price": 7.99
-  }
-];
+{
+  "items": [
+    {
+      "id": 1,
+      "item_name": "Blue water bottle",
+      "category": "Personal item",
+      "location_found": "Library",
+      "date_found": "2026-10-10",
+      "claimed": false
+    },
+    {
+      "id": 2,
+      "item_name": "Student ID card",
+      "category": "Identification",
+      "location_found": "Science building",
+      "date_found": "2026-10-08",
+      "claimed": true
+    }
+  ]
+}
